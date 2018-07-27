@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * A server program which accepts requests from clients to
@@ -28,12 +30,14 @@ public class CapitalizeServer {
      * client that connects just to show interesting logging
      * messages.  It is certainly not necessary to do this.
      */
+    private ThreadManager tman;
+    private ThreadPool tpool;
     public static void main(String[] args) throws Exception {
         System.out.println("The capitalization server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(9898);
-        ThreadManager tman = new ThreadManager();
-        ThreadPool tpool = new ThreadPool();
+        tman = new ThreadManager();
+        tpool = new ThreadPool();
         try {
             while (true) {
                 new Capitalizer(listener.accept(), clientNumber++).start();
@@ -77,14 +81,32 @@ public class CapitalizeServer {
                 out.println("Hello, you are client #" + clientNumber + ".");
                 out.println("Enter a line with only a period to quit\n");
 
-                // Get messages from the client, line by line; return them
-                // capitalized
+                // Get commands from client and process them
+                Pattern p = null;
+                Matcher m = null;
                 while (true) {
                     String input = in.readLine();
-                    if (input == null || input.equals(".")) {
+                    if (input == null) {
                         break;
                     }
-                    out.println(input.toUpperCase());
+                    
+                    input = input.toUpperCase();
+                    
+                    //Check input
+                    String regex = "(((ADD)|(SUB)|(MUL)|(DIV)),[0-9],[0-9])|(KILL)";
+                    p = Pattern.compile(regex);
+                    m = p.matcher(input);
+           
+                    if(!m.matches()) {
+                        out.println("Unsupported commands. Try again. Examples of possible commands are " +
+                                    "ADD,4,5 or SUB,3,6 or MUL,9,8 or DIV,1,1 or KILL.");
+                    }
+                    else {
+                        boolean doneYet = processInput(input);
+                        if(doneYet) {
+                           break;
+                        }            
+                    }
                 }
             } catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
@@ -96,6 +118,22 @@ public class CapitalizeServer {
                 }
                 log("Connection with client# " + clientNumber + " closed");
             }
+        }
+        
+        private boolean processInput(String input, PrintWriter out) {
+           if(input.equals("KILL")) {
+              //Need some way to kill all threads?
+              return true;
+           }
+           
+           int operand1 = (int)(input.charAt(5));
+           int operand2 = (int)(input.charAt(7));
+           if(input.charAt(0) == 'A') { out.println(operand1 + operand2); }
+           else if(input.charAt(0) == 'S') { out.println(operand1 - operand2); }
+           else if(input.charAt(0) == 'M') { out.println(operand1 * operand2); }
+           else if(input.charAt(0) == 'D') { out.println(operand1 / operand2); }
+           
+           return false;
         }
 
         /**
