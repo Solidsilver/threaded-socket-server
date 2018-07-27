@@ -32,6 +32,8 @@ public class CapitalizeServer {
         System.out.println("The capitalization server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(9898);
+        ThreadManager tman = new ThreadManager();
+        ThreadPool tpool = new ThreadPool();
         try {
             while (true) {
                 new Capitalizer(listener.accept(), clientNumber++).start();
