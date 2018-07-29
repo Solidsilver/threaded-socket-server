@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
  */
 
 //test
-public class CapitalizeServer {
+public class TaskServer {
 
     /**
      * Application method to run the server runs in an infinite loop
@@ -41,7 +41,7 @@ public class CapitalizeServer {
         tman.start();
         try {
             while (tman.isTerminated()) {
-                tpool.execute(new Capitalizer(listener.accept(), clientNumber++, tman));
+                tpool.execute(new Task(listener.accept(), clientNumber++, tman));
                 //new Capitalizer(listener.accept(), clientNumber++).start();
             }
         } finally {
@@ -54,12 +54,12 @@ public class CapitalizeServer {
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class Capitalizer implements Runnable {
+    private static class Task implements Runnable {
         private Socket socket;
         private int clientNumber;
         private ThreadManager tm;
 
-        public Capitalizer(Socket socket, int clientNumber, ThreadManager tman) {
+        public Task(Socket socket, int clientNumber, ThreadManager tman) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             this.tm = tman;
@@ -106,7 +106,7 @@ public class CapitalizeServer {
                                     "ADD,4,5 or SUB,3,6 or MUL,9,8 or DIV,1,1 or KILL.");
                     }
                     else {
-                        boolean doneYet = processInput(input);
+                        boolean doneYet = processInput(input, out);
                         if(doneYet) {
                            break;
                         }            

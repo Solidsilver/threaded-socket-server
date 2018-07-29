@@ -1,4 +1,3 @@
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class ThreadPool {
 	private int maxCapacity;
