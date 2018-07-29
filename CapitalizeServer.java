@@ -32,11 +32,13 @@ public class CapitalizeServer {
         System.out.println("The capitalization server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(9898);
-        ThreadManager tman = new ThreadManager();
         ThreadPool tpool = new ThreadPool();
+        ThreadManager tman = new ThreadManager(tpool);
+        tman.start();
         try {
             while (true) {
-                new Capitalizer(listener.accept(), clientNumber++).start();
+                tpool.execute(new Capitalizer(listener.accept(), clientNumber++));
+                //new Capitalizer(listener.accept(), clientNumber++).start();
             }
         } finally {
             listener.close();
@@ -48,7 +50,7 @@ public class CapitalizeServer {
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class Capitalizer extends Thread {
+    private static class Capitalizer implements Runnable {
         private Socket socket;
         private int clientNumber;
 
