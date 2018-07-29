@@ -6,15 +6,17 @@ public class ThreadPool {
 	private WorkerThread[] holders;
 	private boolean stopped;
 
-	private ArrayBlockingQueue<Runnable> jobQueue;
+	private SharedQueue<Runnable> jobQueue;
+	//private ArrayBlockingQueue<Runnable> jobQueue;
 
 	private class WorkerThread extends Thread {
 		// this.jobQueue = new ArrayBlockingQueue<>(50);
 		private boolean stopped;
 		private Runnable toRun;
-		private ArrayBlockingQueue<Runnable> jQueue;
+		//private ArrayBlockingQueue<Runnable> jQueue;
+		private SharedQueue<Runnable> jQueue;
 
-		private WorkerThread(ArrayBlockingQueue<Runnable> jobQueue, boolean stopped) {
+		private WorkerThread(SharedQueue<Runnable> jobQueue, boolean stopped) {
 			this.jQueue = jobQueue;
 			this.stopped = stopped;
 		}
@@ -28,7 +30,7 @@ public class ThreadPool {
 			while (!this.isInterrupted() && !stopped) {
 				try {
 					log("waiting for job");
-					toRun = this.jQueue.take();
+					toRun = this.jQueue.dequeue();
 				} catch (InterruptedException e) {
 					return;
 				}
@@ -47,7 +49,7 @@ public class ThreadPool {
 		this.maxCapacity = 40;
 		this.actualNumberThreads = 5;
 		this.holders = new WorkerThread[maxCapacity];
-		this.jobQueue = new ArrayBlockingQueue<>(50);
+		this.jobQueue = new SharedQueue<Runnable>(50);
 		this.stopped = false;
 	}
 
@@ -102,7 +104,12 @@ public class ThreadPool {
 	}
 
 	public void execute(Runnable r) {
-		this.jobQueue.add(r);
+		try {
+			this.jobQueue.enqueue(r);
+		} catch (InterruptedException e) {
+			System.out.println("Error enqueuing job");
+			e.printStackTrace();
+		}
 	}
 
 	public int numThreadsRunning() {

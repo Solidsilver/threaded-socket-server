@@ -34,6 +34,10 @@ public class ThreadManager extends Thread {
 		}
 	}
 
+	public boolean isTerminated() {
+		return this.terminated;
+	}
+
 	public void terminate() {
 		this.p.stopPool();
 		this.terminated = true;

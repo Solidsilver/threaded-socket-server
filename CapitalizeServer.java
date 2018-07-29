@@ -30,18 +30,18 @@ public class CapitalizeServer {
      * client that connects just to show interesting logging
      * messages.  It is certainly not necessary to do this.
      */
-    private ThreadManager tman;
-    private ThreadPool tpool;
+
     public static void main(String[] args) throws Exception {
         System.out.println("The capitalization server is running.");
         int clientNumber = 0;
+        boolean isStopped = false;
         ServerSocket listener = new ServerSocket(9898);
         ThreadPool tpool = new ThreadPool();
         ThreadManager tman = new ThreadManager(tpool);
         tman.start();
         try {
-            while (true) {
-                tpool.execute(new Capitalizer(listener.accept(), clientNumber++));
+            while (tman.isTerminated()) {
+                tpool.execute(new Capitalizer(listener.accept(), clientNumber++, tman));
                 //new Capitalizer(listener.accept(), clientNumber++).start();
             }
         } finally {
@@ -57,10 +57,12 @@ public class CapitalizeServer {
     private static class Capitalizer implements Runnable {
         private Socket socket;
         private int clientNumber;
+        private ThreadManager tm;
 
-        public Capitalizer(Socket socket, int clientNumber) {
+        public Capitalizer(Socket socket, int clientNumber, ThreadManager tman) {
             this.socket = socket;
             this.clientNumber = clientNumber;
+            this.tm = tman;
             log("New connection with client# " + clientNumber + " at " + socket);
         }
 
@@ -124,6 +126,7 @@ public class CapitalizeServer {
         
         private boolean processInput(String input, PrintWriter out) {
            if(input.equals("KILL")) {
+               tm.terminate();
               //Need some way to kill all threads?
               return true;
            }
