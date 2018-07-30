@@ -39,7 +39,7 @@ public class TaskServer {
                 Socket s = listener.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 String cmd = in.readLine();
-                if (!(tpool.execute(new Task(s, cmd, tman)))) {
+                if (!(tpool.execute(new Job(s, cmd, tman)))) {
                     PrintWriter out = new PrintWriter(s.getOutputStream(), true);
                     out.println("The server is currently busy, please connect later!");
                     s.close();
@@ -56,15 +56,13 @@ public class TaskServer {
         }
     }
 
-    private static class Task implements Runnable {
+    private static class Job implements Runnable {
         private Socket socket;
-        private int clientNumber;
         private ThreadManager tm;
         private String cmd;
 
-        public Task(Socket socket, String command, ThreadManager tman) {
+        public Job(Socket socket, String command, ThreadManager tman) {
             this.socket = socket;
-            // this.clientNumber = clientNumber;
             this.tm = tman;
             this.cmd = command;
             log("New connection at " + socket);
@@ -90,26 +88,26 @@ public class TaskServer {
                     processInput(input, out);
                 }
             } catch (IOException e) {
-                log("Error handling client# " + clientNumber + ": " + e);
+                log("Error handling client: " + e);
             } finally {
                 try {
                     socket.close();
                 } catch (IOException e) {
                     log("Couldn't close a socket, what's going on?");
                 }
-                log("Connection with client# " + clientNumber + " closed");
-                clientNumber--;
-
+                log("Connection with client closed");
             }
         }
 
         private void processInput(String input, PrintWriter out) {
+            log("Request:: " + input);
+            
             if (input.equals("KILL")) {
                 tm.terminate();
                 return;
             }
             if (input.equals("EHLO")) {
-                out.println("Hello, you are connected to server");
+                out.println("Hello, you are connected to the server");
                 return;
             }
 
@@ -124,6 +122,7 @@ public class TaskServer {
             } else if (input.charAt(0) == 'D') {
                 out.println(operand1 / operand2);
             }
+            //out.println(ret);
         }
 
         /**
@@ -131,7 +130,7 @@ public class TaskServer {
          * server applications standard output.  
          */
         private void log(String message) {
-            System.out.println(message);
+            System.out.println("WT: " + message);
         }
     }
 }

@@ -52,7 +52,7 @@ public class ThreadManager extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("ThreadManager Closed");
+		log("ThreadManager Closed");
 	}
 
 	public boolean isTerminated() {
@@ -61,6 +61,10 @@ public class ThreadManager extends Thread {
 
 	public void terminate() {
 		this.terminated = true;
+	}
+
+	private void log(String message) {
+		System.out.println("TM: " + message);
 	}
 
 }

@@ -28,11 +28,9 @@ public class ThreadPool {
 		public void run() {
 			while (/*!this.isInterrupted() &&*/ !stopped) {
 				try {
-					//log("Thread " + Thread.currentThread().getId() + " waiting for job");
 					toRun = this.jQueue.dequeue();
-					//log("Thread " + Thread.currentThread().getId() + " running job");
+					log("Thread " + Thread.currentThread().getId() + " process request:");
 					toRun.run();
-					//log("Thread " + Thread.currentThread().getId() + " Finished job");
 				} catch (Exception e) {
 					log("Thread "+Thread.currentThread().getId() + " Interrupted, exiting");
 					return;
@@ -42,7 +40,7 @@ public class ThreadPool {
 		}
 
 		private void log(String message) {
-			System.out.println(message);
+			System.out.println("WT: "+ message);
 		}
 	}
 
@@ -73,7 +71,6 @@ public class ThreadPool {
 				this.holders[x].join();
 				this.holders[x] = null;
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -82,9 +79,10 @@ public class ThreadPool {
 
 
 	public void incresePool() {
-		System.out.println("Increasing pool");
+		log("Doubling pool: ");
 		if (this.actualNumberThreads <= 20) {
 			this.actualNumberThreads *= 2;
+			log("\tCurrent running threads: " + this.actualNumberThreads);
 			for (int x = actualNumberThreads/2; x < actualNumberThreads; x++) {
 				this.holders[x] = new WorkerThread(this.jobQueue, this.stopped);
 				this.holders[x].start();
@@ -93,9 +91,10 @@ public class ThreadPool {
 	}
 
 	public void decreasePool() {
-		System.out.println("Decreasing pool");
+		log("Halving pool: ");
 		if (this.actualNumberThreads > 5) {
 			this.actualNumberThreads /= 2;
+			log("\tCurrent running threads: " + this.actualNumberThreads);
 			for (int x = actualNumberThreads; x < actualNumberThreads*2; x++) {
 				this.holders[x].interrupt();
 				System.out.println("Closing thread " + x);
@@ -127,6 +126,10 @@ public class ThreadPool {
 
 	public int jobCount() {
 		return this.jobQueue.size();
+	}
+
+	private void log(String message) {
+		System.out.println("TP: " + message);
 	}
 
 }
