@@ -88,9 +88,6 @@ public class CapitalizeClient {
                   "Enter IP Address of the Server:",
                   "Welcome to the Capitalization Program",
                   JOptionPane.QUESTION_MESSAGE);
-
-            // Make connection and initialize streams
-            
       }
 
       public void sendMessage(String message) throws IOException {
