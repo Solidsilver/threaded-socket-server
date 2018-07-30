@@ -5,6 +5,7 @@ public class ThreadManager extends Thread {
 
 	public ThreadManager(ThreadPool p) {
 		this.p = p;
+		this.terminated = false;
 	}
 
 	@Override

@@ -26,17 +26,19 @@ public class ThreadPool {
 		 * version of the string.  
 		 */
 		public void run() {
-			while (!this.isInterrupted() && !stopped) {
+			while (/*!this.isInterrupted() &&*/ !stopped) {
 				try {
-					log("waiting for job");
+					log("Thread " + Thread.currentThread().getId() + " waiting for job");
 					toRun = this.jQueue.dequeue();
-				} catch (InterruptedException e) {
+					log("Thread " + Thread.currentThread().getId() + " running job");
+					toRun.run();
+					log("Thread " + Thread.currentThread().getId() + " Finished job");
+				} catch (Exception e) {
+					log("Thread "+Thread.currentThread().getId() + " Interrupted, exiting");
 					return;
 				}
-				//log("got job, running");
-				toRun.run();
-				//log("job done");
 			}
+			log("Thread " + Thread.currentThread().getId() + " Exiting");
 		}
 
 		private void log(String message) {
@@ -61,15 +63,26 @@ public class ThreadPool {
 
 	public void stopPool() {
 		for (int x = 0; x < actualNumberThreads; x++) {
+
 			this.holders[x].interrupt();
+			this.holders[x].stopped = true;
 			System.out.println("Closing thread " + x);
+			//try {
+				//this.holders[x].join();
+				//System.out.println("Closed " + x);
+			//} catch (Exception e) {
+				//xe.printStackTrace();
+			//}
+			//this.holders[x] = null;
+		}
+		for (int x = 0; x < actualNumberThreads; x++) {
 			try {
 				this.holders[x].join();
-				System.out.println("Closed " + x);
-			} catch (Exception e) {
+				//this.holders[x] = null;
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			this.holders[x] = null;
 		}
 	}
 

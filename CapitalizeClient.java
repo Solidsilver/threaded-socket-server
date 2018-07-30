@@ -25,6 +25,7 @@ public class CapitalizeClient {
       private JFrame frame = new JFrame("Capitalize Client");
       private JTextField dataField = new JTextField(40);
       private JTextArea messageArea = new JTextArea(8, 60);
+      private String serverAddress;
 
       /**
         * Constructs the client by laying out the GUI and registering a
@@ -49,7 +50,12 @@ public class CapitalizeClient {
                     * streams and windows.
                     */
                   public void actionPerformed(ActionEvent e) {
-                        out.println(dataField.getText());
+                        try {
+                              sendMessage(dataField.getText());
+                        } catch (Exception a) {
+                              return;
+                        }
+                        //out.println(dataField.getText());
                         String response;
                         try {
                               response = in.readLine();
@@ -77,22 +83,21 @@ public class CapitalizeClient {
       public void connectToServer() throws IOException {
 
             // Get the server address from a dialog box.
-            String serverAddress = JOptionPane.showInputDialog(
+            this.serverAddress = JOptionPane.showInputDialog(
                   frame,
                   "Enter IP Address of the Server:",
                   "Welcome to the Capitalization Program",
                   JOptionPane.QUESTION_MESSAGE);
 
             // Make connection and initialize streams
-            Socket socket = new Socket(serverAddress, 9898);
-            in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+            
+      }
 
-            // Consume the initial welcoming messages from the server
-            for (int i = 0; i < 3; i++) {
-                  messageArea.append(in.readLine() + "\n");
-            }
+      public void sendMessage(String message) throws IOException {
+            Socket socket = new Socket(serverAddress, 9898);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(message);
       }
 
       /**

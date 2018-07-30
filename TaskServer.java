@@ -39,12 +39,17 @@ public class TaskServer {
         ThreadPool tpool = new ThreadPool();
         ThreadManager tman = new ThreadManager(tpool);
         tman.start();
+        System.out.println(tman.isTerminated());
         try {
-            while (tman.isTerminated()) {
-                tpool.execute(new Task(listener.accept(), clientNumber++, tman));
+            while (!tman.isTerminated()) {
+                Socket s = listener.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                String cmd = in.readLine();
+                tpool.execute(new Task(listener.accept(), cmd, clientNumber++, tman));
                 //new Capitalizer(listener.accept(), clientNumber++).start();
             }
         } finally {
+            tman.join();
             listener.close();
         }
     }
@@ -58,11 +63,13 @@ public class TaskServer {
         private Socket socket;
         private int clientNumber;
         private ThreadManager tm;
+        private String cmd;
 
-        public Task(Socket socket, int clientNumber, ThreadManager tman) {
+        public Task(Socket socket, String command, int clientNumber, ThreadManager tman) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             this.tm = tman;
+            this.cmd = command;
             log("New connection with client# " + clientNumber + " at " + socket);
         }
 
@@ -72,29 +79,29 @@ public class TaskServer {
          * and sending back the capitalized version of the string.
          */
         public void run() {
+            boolean doneYet = false;
             try {
-
+                String input;
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
+                //BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 // Send a welcome message to the client.
-                out.println("Hello, you are client #" + clientNumber + ".");
-                out.println("Enter a line with only a period to quit\n");
+                //out.println("Hello, you are client #" + clientNumber + ".");
+                //out.println("Enter a line with only a period to quit\n");
 
                 // Get commands from client and process them
                 Pattern p = null;
                 Matcher m = null;
-                while (true) {
-                    String input = in.readLine();
-                    if (input == null) {
-                        break;
-                    }
+                //while (true) {
+                    //String input = in.readLine();
+                    //if (input == null) {
+                        //break;
+                    //}
                     
-                    input = input.toUpperCase();
+                    input = cmd.toUpperCase();
                     
                     //Check input
                     String regex = "(((ADD)|(SUB)|(MUL)|(DIV)),[0-9],[0-9])|(KILL)";
@@ -106,12 +113,9 @@ public class TaskServer {
                                     "ADD,4,5 or SUB,3,6 or MUL,9,8 or DIV,1,1 or KILL.");
                     }
                     else {
-                        boolean doneYet = processInput(input, out);
-                        if(doneYet) {
-                           break;
-                        }            
+                        processInput(input, out);         
                     }
-                }
+                //}
             } catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
             } finally {
@@ -121,24 +125,22 @@ public class TaskServer {
                     log("Couldn't close a socket, what's going on?");
                 }
                 log("Connection with client# " + clientNumber + " closed");
+                
             }
         }
         
-        private boolean processInput(String input, PrintWriter out) {
+        private void processInput(String input, PrintWriter out) {
            if(input.equals("KILL")) {
                tm.terminate();
-              //Need some way to kill all threads?
-              return true;
+               return;
            }
            
-           int operand1 = (int)(input.charAt(5));
-           int operand2 = (int)(input.charAt(7));
+           int operand1 = Integer.parseInt(input.charAt(4) + "");
+           int operand2 = Integer.parseInt(input.charAt(6) + "");
            if(input.charAt(0) == 'A') { out.println(operand1 + operand2); }
            else if(input.charAt(0) == 'S') { out.println(operand1 - operand2); }
            else if(input.charAt(0) == 'M') { out.println(operand1 * operand2); }
            else if(input.charAt(0) == 'D') { out.println(operand1 / operand2); }
-           
-           return false;
         }
 
         /**
