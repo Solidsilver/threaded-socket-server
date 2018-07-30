@@ -27,11 +27,6 @@ public class ParallelClient {
       private JTextArea messageArea = new JTextArea(8, 60);
       private String serverAddress;
 
-      /**
-        * Constructs the client by laying out the GUI and registering a
-        * listener with the textfield so that pressing Enter in the
-        * listener sends the textfield contents to the server.
-        */
       public ParallelClient() {
 
             // Layout GUI
@@ -41,34 +36,17 @@ public class ParallelClient {
 
             // Add Listeners
             dataField.addActionListener(new ActionListener() {
-                  /**
-                    * Responds to pressing the enter key in the textfield
-                    * by sending the contents of the text field to the
-                    * server and displaying the response from the server
-                    * in the text area.   If the response is "." we exit
-                    * the whole application, which closes all sockets,
-                    * streams and windows.
-                    */
                   public void actionPerformed(ActionEvent e) {
                         try {
                               sendMessage(dataField.getText());
                         } catch (Exception a) {
                               return;
                         }
-                        //out.println(dataField.getText());
-                        //getMessage();
                         
                   }
             });
       }
 
-      /**
-        * Implements the connection logic by prompting the end user for
-        * the server's IP address, connecting, setting up streams, and
-        * consuming the welcome messages from the server.   The Capitalizer
-        * protocol says that the server sends three lines of text to the
-        * client immediately after establishing a connection.
-        */
       public void connectToServer() throws IOException {
 
             // Get the server address from a dialog box.
@@ -78,9 +56,7 @@ public class ParallelClient {
                   "Welcome to the Capitalization Program",
                   JOptionPane.QUESTION_MESSAGE);
 
-            // Make connection and initialize streams
             sendMessage("EHLO");
-            //getMessage();
       }
 
       public void sendMessage(String message) throws IOException {

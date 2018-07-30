@@ -6,13 +6,10 @@ public class ThreadPool {
 	private boolean stopped;
 
 	private SharedQueue<Runnable> jobQueue;
-	//private ArrayBlockingQueue<Runnable> jobQueue;
 
 	private class WorkerThread extends Thread {
-		// this.jobQueue = new ArrayBlockingQueue<>(50);
 		private boolean stopped;
 		private Runnable toRun;
-		//private ArrayBlockingQueue<Runnable> jQueue;
 		private SharedQueue<Runnable> jQueue;
 
 		private WorkerThread(SharedQueue<Runnable> jobQueue, boolean stopped) {
@@ -20,13 +17,8 @@ public class ThreadPool {
 			this.stopped = stopped;
 		}
 
-		/**
-		 *  * Services this thread's client by first sending the  * client a welcome
-		 * message then repeatedly reading strings  * and sending back the capitalized
-		 * version of the string.  
-		 */
 		public void run() {
-			while (/*!this.isInterrupted() &&*/ !stopped) {
+			while (!stopped) {
 				try {
 					toRun = this.jQueue.dequeue();
 					log("Thread " + Thread.currentThread().getId() + " process request:");
@@ -115,7 +107,6 @@ public class ThreadPool {
 			return false;
 		}
 		this.jobQueue.enqueue(r);
-		//Thread.sleep(2000);
 		return true;
 		
 	}
