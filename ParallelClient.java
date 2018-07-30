@@ -18,7 +18,7 @@ import javax.swing.JTextField;
   * strings and a textarea to see the results of capitalizing
   * them.
   */
-public class CapitalizeClient {
+public class ParallelClient {
 
       private BufferedReader in;
       private PrintWriter out;
@@ -32,7 +32,7 @@ public class CapitalizeClient {
         * listener with the textfield so that pressing Enter in the
         * listener sends the textfield contents to the server.
         */
-      public CapitalizeClient() {
+      public ParallelClient() {
 
             // Layout GUI
             messageArea.setEditable(false);
@@ -56,19 +56,8 @@ public class CapitalizeClient {
                               return;
                         }
                         //out.println(dataField.getText());
-                        String response;
-                        try {
-                              response = in.readLine();
-                              if (response == null || response.equals("")) {
-                                  System.out.println("client to terminate.");
-                                       System.exit(0);
-                                 }
-                        } catch (IOException ex) {
-                                   response = "Error: " + ex;
-                            System.out.println("" + response + "\n");
-                        }
-                        messageArea.append(response + "\n");
-                        dataField.selectAll();
+                        //getMessage();
+                        
                   }
             });
       }
@@ -90,7 +79,8 @@ public class CapitalizeClient {
                   JOptionPane.QUESTION_MESSAGE);
 
             // Make connection and initialize streams
-            
+            sendMessage("EHLO");
+            //getMessage();
       }
 
       public void sendMessage(String message) throws IOException {
@@ -98,13 +88,26 @@ public class CapitalizeClient {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             out.println(message);
+            String response;
+            try {
+                  response = in.readLine();
+                  if (response == null || response.equals("")) {
+                      System.out.println("client to terminate.");
+                           System.exit(0);
+                     }
+            } catch (IOException ex) {
+                       response = "Error: " + ex;
+                System.out.println("" + response + "\n");
+            }
+            messageArea.append(response + "\n");
+            dataField.selectAll();
       }
 
       /**
         * Runs the client application.
         */
       public static void main(String[] args) throws Exception {
-            CapitalizeClient client = new CapitalizeClient();
+            ParallelClient client = new ParallelClient();
             client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             client.frame.pack();
             client.frame.setVisible(true);
