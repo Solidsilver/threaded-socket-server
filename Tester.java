@@ -1,21 +1,6 @@
 
 public class Tester {
 	public static void main(String[] args) {
-		/*TestClient tc1 = new TestClient();
-		String in;
-		do {
-			Scanner kb = new Scanner(System.in);
-			out("> ");
-			in = kb.nextLine();
-			if (!in.equals("ext")){
-				try {
-					tc1.sendMessage(in);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		} while (!in.equals("ext"));
-		*/
 		outln("Starting test");
 		int clients = 100;
 		TestClient[] tca = new TestClient[clients];
