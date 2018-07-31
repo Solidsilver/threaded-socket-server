@@ -12,23 +12,24 @@ public class ThreadPool {
 		private Runnable toRun;
 		private SharedQueue<Runnable> jQueue;
 
-		private WorkerThread(SharedQueue<Runnable> jobQueue, boolean stopped) {
+		private WorkerThread(SharedQueue<Runnable> jobQueue, boolean stopped, int threadID) {
 			this.jQueue = jobQueue;
 			this.stopped = stopped;
+			Thread.currentThread().setName("Thread-" + threadID);
 		}
 
 		public void run() {
 			while (!stopped) {
 				try {
 					toRun = this.jQueue.dequeue();
-					log("Thread " + Thread.currentThread().getId() + " process request:");
+					log(Thread.currentThread().getName() + " process request:");
 					toRun.run();
 				} catch (Exception e) {
-					log("Thread "+Thread.currentThread().getId() + " Interrupted, exiting");
+					log(Thread.currentThread().getName() + " Interrupted, exiting");
 					return;
 				}
 			}
-			log("Thread " + Thread.currentThread().getId() + " Exiting");
+			log(Thread.currentThread().getName() + " Exiting");
 		}
 
 		private void log(String message) {
@@ -45,8 +46,9 @@ public class ThreadPool {
 	}
 
 	public void startPool() {
+		log("Starting Pool");
 		for (int x = 0; x < 5; x++) {
-			this.holders[x] = new WorkerThread(this.jobQueue, this.stopped);
+			this.holders[x] = new WorkerThread(this.jobQueue, this.stopped, x);
 			this.holders[x].start();
 		}
 	}
@@ -56,7 +58,7 @@ public class ThreadPool {
 
 			this.holders[x].interrupt();
 			this.holders[x].stopped = true;
-			System.out.println("Closing thread " + x);
+			log("Closing thread " + x);
 		}
 		for (int x = 0; x < actualNumberThreads; x++) {
 			try {
@@ -70,24 +72,28 @@ public class ThreadPool {
 	}
 
 
-	public void incresePool() {
+	public synchronized void incresePool() {
 		log("Doubling pool: ");
 		if (this.actualNumberThreads <= 20) {
+			int start = this.actualNumberThreads;
 			this.actualNumberThreads *= 2;
 			log("\tCurrent running threads: " + this.actualNumberThreads);
-			for (int x = actualNumberThreads/2; x < actualNumberThreads; x++) {
-				this.holders[x] = new WorkerThread(this.jobQueue, this.stopped);
+			for (int x = start; x < actualNumberThreads; x++) {
+				this.holders[x] = new WorkerThread(this.jobQueue, this.stopped, x);
 				this.holders[x].start();
 			}
+		} else {
+			log("Pool not doubled!!!!!!");
 		}
 	}
 
-	public void decreasePool() {
+	public synchronized void decreasePool() {
 		log("Halving pool: ");
 		if (this.actualNumberThreads > 5) {
+			int end = this.actualNumberThreads;
 			this.actualNumberThreads /= 2;
 			log("\tCurrent running threads: " + this.actualNumberThreads);
-			for (int x = actualNumberThreads; x < actualNumberThreads*2; x++) {
+			for (int x = actualNumberThreads; x < end; x++) {
 				this.holders[x].interrupt();
 				System.out.println("Closing thread " + x);
 				try {
@@ -120,7 +126,7 @@ public class ThreadPool {
 	}
 
 	private void log(String message) {
-		System.out.println("TP: " + message);
+		System.out.println("@@@TP: " + message);
 	}
 
 }

@@ -11,7 +11,7 @@ public class ThreadManager extends Thread {
 	public ThreadManager(ThreadPool p, ServerSocket term) {
 		this.p = p;
 		this.terminated = false;
-		this.wait = 5000;
+		this.wait = 100;
 		this.term = term;
 	}
 
