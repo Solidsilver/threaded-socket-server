@@ -22,6 +22,7 @@ public class TaskServer {
                 String cmd = in.readLine();
                 if (!(tpool.execute(new Job(s, cmd, tman)))) {
                     PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+                    System.out.println("TS: JobQueue full! Not accpting client");
                     out.println("The server is currently busy, please connect later!");
                     s.close();
                 }
@@ -51,7 +52,7 @@ public class TaskServer {
 
         public void run() {
             try {
-                boolean test = false;
+                boolean test = true;
                 if (test) {
                     Thread.sleep(100);
 
