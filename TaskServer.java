@@ -63,7 +63,6 @@ public class TaskServer {
                 Matcher m = null;
                 input = cmd.toUpperCase();
 
-                // Check input
                 String regex = "(((ADD)|(SUB)|(MUL)|(DIV)),[0-9],[0-9])|(KILL)|(EHLO)";
                 p = Pattern.compile(regex);
                 m = p.matcher(input);
@@ -109,9 +108,13 @@ public class TaskServer {
             } else if (input.charAt(0) == 'M') {
                 out.println(operand1 * operand2);
             } else if (input.charAt(0) == 'D') {
-                out.println(operand1 / operand2);
+                if(operand2 == 0) {
+                  out.println("Undefined!");
+                }
+                else {
+                  out.println(operand1 / operand2);
+                }
             }
-            //out.println(ret);
         }
 
         private void log(String message) {
