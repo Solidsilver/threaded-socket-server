@@ -51,6 +51,11 @@ public class TaskServer {
 
         public void run() {
             try {
+                boolean test = false;
+                if (test) {
+                    Thread.sleep(100);
+
+                }
                 String input;
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 Pattern p = null;
@@ -70,7 +75,9 @@ public class TaskServer {
                 }
             } catch (IOException e) {
                 log("Error handling client: " + e);
-            } finally {
+            } catch (InterruptedException e) {
+                log("could not sleep");
+;            } finally {
                 try {
                     socket.close();
                 } catch (IOException e) {

@@ -20,7 +20,7 @@ public class Tester {
 		int clients = 100;
 		TestClient[] tca = new TestClient[clients];
 		for (int x = 0; x < clients; x++) {
-			tca[x] = new TestClient("192.168.1.16");
+			tca[x] = new TestClient("localhost");
 			tca[x].start();
 		}
 		for (int x = 0; x < clients; x++) {

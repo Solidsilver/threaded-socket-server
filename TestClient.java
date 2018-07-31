@@ -58,7 +58,7 @@ public class TestClient extends Thread {
 	public void run() {
 		for (int x = 0; x < 10; x++) {
 			try {
-				sendMessage("ADD,5,7");
+				sendMessage("ADD,6,7");
 				//Thread.sleep(10);
 			} catch (Exception e) {
 				e.printStackTrace();
