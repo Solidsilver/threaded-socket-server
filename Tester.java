@@ -3,7 +3,7 @@ import java.io.IOException;
 public class Tester {
 	public static void main(String[] args) {
 		outln("Starting test");
-		int clients = 50;
+		int clients = 100;
 		TestClient[] tca = new TestClient[clients];
 		for (int x = 0; x < clients; x++) {
 			tca[x] = new TestClient("localhost");
