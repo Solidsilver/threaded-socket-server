@@ -1,6 +1,6 @@
-#**Design:**
+# **Design:**
 
-##Classes:
+## Classes:
 
  The **TaskServer** class is responsible for running the main server, and starting the ThreadPool and ThreadManager. It is also responsible for accepting incoming connections and sending off the jobs to the ThreadPool.
 
@@ -12,7 +12,7 @@
 
  The **ThreadManager** class is responsible for watching the ThreadPool&#39;s resources. If the number of jobs to complete passes a threshold, it calls upon the ThreadPool to increase/decrease the number of threads to scale to the demand.
 
-#**Issues and How We Solved Them:**
+# **Issues and How We Solved Them:**
 
 **        1:** One issue we had developing this program is that an Interrupted Exception would be thrown when a WorkerThread receives a &quot;KILL&quot; Job. The problem was that the method called by the thread would hang until all of the threads have been killed. This cause all threads but the thread that called &quot;KILL&quot; to terminate, and then the ThreadPool would throw an exception when trying to kill the last thread.
 
@@ -24,31 +24,31 @@
 
 
 
-#**Tests:**
+# **Tests:**
 
-##**Test 1:** Force an increase of the ThreadPool:
+## **Test 1:** Force an increase of the ThreadPool:
 ![TEST1](/public/TESTincthread.png)
 As can be seen in the above screenshot, as the number of incoming connections increases, the ThreadPool (@@@TP above) doubles the thread twice.
 
 
-##**Test 2:** Observe decrease of pool after load decreases:
+## **Test 2:** Observe decrease of pool after load decreases:
 ![TEST2](/public/TESTdecthread.png)
 As can be seen above, as a number of connections are closed (and only one opened), the ThreadPool halves the number of threads.
 
 
-##**Test 3:** Graceful kill:
+## **Test 3:** Graceful kill:
 ![TEST3](/public/TESTkill.png)
 _Server(left), Client(right)_
 As seen above, after a few normal commands the client sends &quot;kill&quot;. After that, the server closes all of the current threads not processing a command (and waiting for those that are), then shuts down.
 
 
 
-##**Test 4:** Response to commands
+## **Test 4:** Response to commands
 ![TEST4](/public/TESTcmds.png)
 As can be seen above, commands ADD, SUB, MUL, and DIV return correct results. Other commands result in a message notifying the client of available commands and usage.
 
 
-##**Test 5:** Full Job Queue
+## **Test 5:** Full Job Queue
 ![TEST5](/public/TESTfuljq.png)
 _Server(left), Client(right)_
 This test increased the latency of commands on the WorkerThreads and sent 10 commands from 100 threads. As shown, once the server logs a full jobQueue, the client receives a message indicating this.
