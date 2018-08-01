@@ -22,7 +22,7 @@ public class TaskServer {
                 String cmd = in.readLine();
                 if (!(tpool.execute(new Job(s, cmd, tman)))) {
                     PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-                    System.out.println("TS: JobQueue full! Not accpting client");
+                    System.out.println("TS: JobQueue full! Not accepting client");
                     out.println("The server is currently busy, please connect later!");
                     s.close();
                 }
@@ -107,22 +107,17 @@ public class TaskServer {
             String send = "";
             if (input.charAt(0) == 'A') {
                 send = "" + (operand1 + operand2);
-                //out.println(operand1 + operand2);
-                
+                     
             } else if (input.charAt(0) == 'S') {
                 send = "" + (operand1 - operand2);
-                //out.println(operand1 - operand2);
             } else if (input.charAt(0) == 'M') {
                 send = "" + (operand1 * operand2);
-                //out.println(operand1 * operand2);
             } else if (input.charAt(0) == 'D') {
                 if(operand2 == 0) {
                     send = "Undefined!";
-                  //out.println("Undefined!");
                 }
                 else {
                     send = "" + (operand1 / operand2);
-                  //out.println(operand1 / operand2);
                 }
             }
             out.println(send);
