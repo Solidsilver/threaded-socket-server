@@ -1,8 +1,9 @@
+import java.io.IOException;
 
 public class Tester {
 	public static void main(String[] args) {
 		outln("Starting test");
-		int clients = 100;
+		int clients = 50;
 		TestClient[] tca = new TestClient[clients];
 		for (int x = 0; x < clients; x++) {
 			tca[x] = new TestClient("localhost");
@@ -14,6 +15,12 @@ public class Tester {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+		TestClient tc = new TestClient("localhost");
+		try {
+			tc.sendMessage("kill");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		outln("Test Complete");
 

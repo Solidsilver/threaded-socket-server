@@ -36,6 +36,7 @@ public class TaskServer {
             }
             System.out.println("Server Shut Down");
         }
+        System.exit(0);
     }
 
     private static class Job implements Runnable {
@@ -92,29 +93,40 @@ public class TaskServer {
             
             if (input.equals("KILL")) {
                 tm.terminate();
+                log("Kill sent, closing thread");
                 return;
             }
             if (input.equals("EHLO")) {
                 out.println("Hello, you are connected to the server");
+                log("Sent greeting");
                 return;
             }
 
             int operand1 = Integer.parseInt(input.charAt(4) + "");
             int operand2 = Integer.parseInt(input.charAt(6) + "");
+            String send = "";
             if (input.charAt(0) == 'A') {
-                out.println(operand1 + operand2);
+                send = "" + (operand1 + operand2);
+                //out.println(operand1 + operand2);
+                
             } else if (input.charAt(0) == 'S') {
-                out.println(operand1 - operand2);
+                send = "" + (operand1 - operand2);
+                //out.println(operand1 - operand2);
             } else if (input.charAt(0) == 'M') {
-                out.println(operand1 * operand2);
+                send = "" + (operand1 * operand2);
+                //out.println(operand1 * operand2);
             } else if (input.charAt(0) == 'D') {
                 if(operand2 == 0) {
-                  out.println("Undefined!");
+                    send = "Undefined!";
+                  //out.println("Undefined!");
                 }
                 else {
-                  out.println(operand1 / operand2);
+                    send = "" + (operand1 / operand2);
+                  //out.println(operand1 / operand2);
                 }
             }
+            out.println(send);
+            log("Sent: " + send);
         }
 
         private void log(String message) {

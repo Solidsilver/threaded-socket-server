@@ -11,7 +11,7 @@ public class ThreadManager extends Thread {
 	public ThreadManager(ThreadPool p, ServerSocket term) {
 		this.p = p;
 		this.terminated = false;
-		this.wait = 100;
+		this.wait = 1000;
 		this.term = term;
 	}
 
@@ -22,9 +22,7 @@ public class ThreadManager extends Thread {
 		while(!terminated) {
 			try {
 				Thread.sleep(this.wait);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			
 			if (p.jobCount() > T1 && p.jobCount() <= T2 &&  p.numThreadsRunning() == 5) {
 				p.incresePool();
 				while (p.jobCount() >= T1 && p.jobCount() <= T2) {}
@@ -43,15 +41,21 @@ public class ThreadManager extends Thread {
 			if (p.jobCount() < T1 && p.numThreadsRunning() == 10) {
 				p.decreasePool();
 			}
+		} catch (InterruptedException e) {
+			//e.printStackTrace();
+			break;
+		}
 			
 		}
+		log("Got kill signal, stopping pool");
 		this.p.stopPool();
+		log("Pool stopped, signaling main thread");
 		try {
 			term.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		log("ThreadManager Closed");
+		log("Main signaled, ThreadManager Closed");
 	}
 
 	public boolean isTerminated() {
@@ -60,6 +64,7 @@ public class ThreadManager extends Thread {
 
 	public void terminate() {
 		this.terminated = true;
+		this.interrupt();
 	}
 
 	private void log(String message) {

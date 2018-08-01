@@ -25,8 +25,10 @@ public class ThreadPool {
 					log(Thread.currentThread().getName() + " process request:");
 					toRun.run();
 				} catch (Exception e) {
-					log(Thread.currentThread().getName() + " Interrupted, exiting");
-					return;
+					if (stopped) {
+						log(Thread.currentThread().getName() + " Interrupted, exiting");
+						return;
+					}
 				}
 			}
 			log(Thread.currentThread().getName() + " Exiting");
@@ -45,7 +47,7 @@ public class ThreadPool {
 		this.stopped = false;
 	}
 
-	public void startPool() {
+	public synchronized void startPool() {
 		log("Starting Pool");
 		for (int x = 0; x < 5; x++) {
 			this.holders[x] = new WorkerThread(this.jobQueue, this.stopped, x);
@@ -53,20 +55,27 @@ public class ThreadPool {
 		}
 	}
 
-	public void stopPool() {
-		for (int x = 0; x < actualNumberThreads; x++) {
-
-			this.holders[x].interrupt();
-			this.holders[x].stopped = true;
-			log("Closing thread " + x);
-		}
-		for (int x = 0; x < actualNumberThreads; x++) {
-			try {
-				this.holders[x].join();
-				this.holders[x] = null;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	public synchronized void stopPool() {
+		log("Stopping pool");
+		for (int x = 0; x < 40; x++) {
+			if (this.holders[x] != null) {
+				this.holders[x].stopped = true;
+				this.holders[x].interrupt();
+				log("Closing thread " + x);
 			}
+			
+		}
+		log("Waiting for threads to end jobs");
+		for (int x = 0; x < 40; x++) {
+			if (this.holders[x] != null) {
+				try {
+					this.holders[x].join();
+					this.holders[x] = null;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 		System.out.println("Pool Closed");
 	}
@@ -94,6 +103,7 @@ public class ThreadPool {
 			this.actualNumberThreads /= 2;
 			log("\tCurrent running threads: " + this.actualNumberThreads);
 			for (int x = actualNumberThreads; x < end; x++) {
+				this.holders[x].stopped = true;
 				this.holders[x].interrupt();
 				System.out.println("Closing thread " + x);
 				try {
@@ -117,11 +127,11 @@ public class ThreadPool {
 		
 	}
 
-	public int numThreadsRunning() {
+	public synchronized int numThreadsRunning() {
 		return this.actualNumberThreads;
 	}
 
-	public int jobCount() {
+	public synchronized int jobCount() {
 		return this.jobQueue.size();
 	}
 

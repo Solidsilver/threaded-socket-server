@@ -37,7 +37,8 @@ public class TestClient extends Thread {
 			response = in.readLine();
 			if (response == null || response.equals("")) {
 				System.out.println("Client terminated");
-				System.exit(0);
+				return;
+				//System.exit(0);
 			}
 		} catch (IOException ex) {
 			response = "Error: " + ex;
