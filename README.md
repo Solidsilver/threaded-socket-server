@@ -1,3 +1,10 @@
+# **Info:**
+This project was created at Eastern Washington University
+CSCD 467
+Midterm Project
+Team Members: Evan Sanford and Luke Mattfeld
+
+
 # **Design:**
 
 ## Classes:
@@ -52,7 +59,3 @@ As can be seen above, commands ADD, SUB, MUL, and DIV return correct results. Ot
 ![TEST5](/public/TESTfuljq.png)
 _Server(left), Client(right)_
 This test increased the latency of commands on the WorkerThreads and sent 10 commands from 100 threads. As shown, once the server logs a full jobQueue, the client receives a message indicating this.
-
-
-
-GitHub Link: [https://github.com/Solidsilver/cscd-467-midterm](https://github.com/Solidsilver/cscd-467-midterm)
