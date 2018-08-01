@@ -1,7 +1,10 @@
 # **Info:**
 This project was created at Eastern Washington University
+
 CSCD 467
+
 Midterm Project
+
 Team Members: Evan Sanford and Luke Mattfeld
 
 
