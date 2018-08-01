@@ -14,7 +14,7 @@
 
 # **Issues and How We Solved Them:**
 
-**        1:** One issue we had developing this program is that an Interrupted Exception would be thrown when a WorkerThread receives a &quot;KILL&quot; Job. The problem was that the method called by the thread would hang until all of the threads have been killed. This cause all threads but the thread that called &quot;KILL&quot; to terminate, and then the ThreadPool would throw an exception when trying to kill the last thread.
+**1:** One issue we had developing this program is that an Interrupted Exception would be thrown when a WorkerThread receives a &quot;KILL&quot; Job. The problem was that the method called by the thread would hang until all of the threads have been killed. This cause all threads but the thread that called &quot;KILL&quot; to terminate, and then the ThreadPool would throw an exception when trying to kill the last thread.
 
   **1A:** We fixed this problem by changing the method called by the job to kill the entire server. The method now sets a boolean in the ThreadManager, and does not wait for the all threads to be stopped. Thus, all jobs are finished before the ThreadPool is killed.
 
