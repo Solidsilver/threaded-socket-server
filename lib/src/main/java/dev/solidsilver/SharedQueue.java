@@ -1,4 +1,4 @@
-
+package dev.solidsilver;
 import java.util.LinkedList;
 
 

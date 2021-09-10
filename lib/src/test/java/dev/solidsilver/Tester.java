@@ -1,9 +1,10 @@
+package dev.solidsilver;
 import java.io.IOException;
 
 public class Tester {
 	public static void main(String[] args) {
 		outln("Starting test");
-		int clients = 100;
+		int clients = 10;
 		TestClient[] tca = new TestClient[clients];
 		for (int x = 0; x < clients; x++) {
 			tca[x] = new TestClient("localhost");

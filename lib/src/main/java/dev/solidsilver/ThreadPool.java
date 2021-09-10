@@ -1,3 +1,4 @@
+package dev.solidsilver;
 
 public class ThreadPool {
 	private int maxCapacity;
@@ -47,9 +48,17 @@ public class ThreadPool {
 		this.stopped = false;
 	}
 
+	public ThreadPool(Integer maxCapacity) {
+		this.maxCapacity = maxCapacity;
+		this.actualNumberThreads = 5;
+		this.holders = new WorkerThread[maxCapacity];
+		this.jobQueue = new SharedQueue<Runnable>(50);
+		this.stopped = false;
+	}
+
 	public synchronized void startPool() {
 		log("Starting Pool");
-		for (int x = 0; x < 5; x++) {
+		for (int x = 0; x < this.actualNumberThreads; x++) {
 			this.holders[x] = new WorkerThread(this.jobQueue, this.stopped, x);
 			this.holders[x].start();
 		}
@@ -57,7 +66,7 @@ public class ThreadPool {
 
 	public synchronized void stopPool() {
 		log("Stopping pool");
-		for (int x = 0; x < 40; x++) {
+		for (int x = 0; x < this.maxCapacity; x++) {
 			if (this.holders[x] != null) {
 				this.holders[x].stopped = true;
 				this.holders[x].interrupt();
@@ -66,7 +75,7 @@ public class ThreadPool {
 			
 		}
 		log("Waiting for threads to end jobs");
-		for (int x = 0; x < 40; x++) {
+		for (int x = 0; x < this.maxCapacity; x++) {
 			if (this.holders[x] != null) {
 				try {
 					this.holders[x].join();

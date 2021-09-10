@@ -1,3 +1,4 @@
+package dev.solidsilver;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
@@ -6,6 +7,7 @@ public class TestClient extends Thread {
 	private BufferedReader in;
 	private PrintWriter out;
 	private String serverAddress;
+	private int serverPort;
 
 	public TestClient() {
 		Scanner kb = new Scanner(System.in);
@@ -24,11 +26,12 @@ public class TestClient extends Thread {
 
 	public TestClient(String addr) {
 		this.serverAddress = addr;
+		this.serverPort = 9898;
 	}
 
 
 	public void sendMessage(String message) throws IOException {
-		Socket socket = new Socket(serverAddress, 9898);
+		Socket socket = new Socket(serverAddress, this.serverPort);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream(), true);
 		out.println(message);
@@ -57,10 +60,13 @@ public class TestClient extends Thread {
 
 	@Override
 	public void run() {
-		for (int x = 0; x < 10; x++) {
+		String[] messages = { "ADD", "SUB", "MUL", "DIV", "POW" };
+		Random rand = new Random();
+		for (int x = 0; x < 1000; x++) {
 			try {
-				sendMessage("ADD,6,7");
-				//Thread.sleep(10);
+				String msg = messages[rand.nextInt(messages.length)];
+				sendMessage(msg + "," + rand.nextInt(99) + "," + rand.nextInt(98)+1);
+				Thread.sleep(100);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
