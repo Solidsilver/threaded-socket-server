@@ -1,5 +1,10 @@
 package dev.solidsilver;
 
+/**
+ * A thread pool that can be used to execute tasks in parallel.
+ * 
+ * @author solidsilver
+ */
 public class ThreadPool {
 	private int maxCapacity;
 	private int actualNumberThreads;
@@ -40,6 +45,9 @@ public class ThreadPool {
 		}
 	}
 
+	/**
+	 * Creates a new thread pool with a max capacity of 40
+	 */
 	public ThreadPool() {
 		this.maxCapacity = 40;
 		this.actualNumberThreads = 5;
@@ -48,6 +56,11 @@ public class ThreadPool {
 		this.stopped = false;
 	}
 
+	/**
+	 * Creates a new thread pool with a max capacity of the given value
+	 * 
+	 * @param maxCapacity
+	 */
 	public ThreadPool(Integer maxCapacity) {
 		this.maxCapacity = maxCapacity;
 		this.actualNumberThreads = 5;
@@ -56,6 +69,9 @@ public class ThreadPool {
 		this.stopped = false;
 	}
 
+	/**
+	 * Starts the thread pool with 5 threads
+	 */
 	public synchronized void startPool() {
 		log("Starting Pool");
 		for (int x = 0; x < this.actualNumberThreads; x++) {
@@ -64,6 +80,9 @@ public class ThreadPool {
 		}
 	}
 
+	/**
+	 * Stops the thread pool
+	 */
 	public synchronized void stopPool() {
 		log("Stopping pool");
 		for (int x = 0; x < this.maxCapacity; x++) {
@@ -90,6 +109,9 @@ public class ThreadPool {
 	}
 
 
+	/**
+	 * Increases the number of threads in the thread pool
+	 */
 	public synchronized void incresePool() {
 		log("Doubling pool: ");
 		if (this.actualNumberThreads <= 20) {
@@ -105,6 +127,9 @@ public class ThreadPool {
 		}
 	}
 
+	/**
+	 * Decreases the number of threads in the thread pool
+	 */
 	public synchronized void decreasePool() {
 		log("Halving pool: ");
 		if (this.actualNumberThreads > 5) {
@@ -127,6 +152,9 @@ public class ThreadPool {
 		
 	}
 
+	/**
+	 * Adds a task to the thread pool
+	 */
 	public boolean execute(Runnable r) throws InterruptedException {
 		if (this.jobQueue.isFull()) {
 			return false;

@@ -2,6 +2,11 @@ package dev.solidsilver;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+/**
+ * ThreadManager
+ * 
+ * @author solidsilver
+ */
 public class ThreadManager extends Thread {
 	private final int T1 = 10, T2 = 20;
 	private int wait;
@@ -9,6 +14,12 @@ public class ThreadManager extends Thread {
 	private boolean terminated;
 	private ServerSocket term;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param p ThreadPool to send jobs to
+	 * @param term ServerSocket to terminate when done.
+	 */
 	public ThreadManager(ThreadPool p, ServerSocket term) {
 		this.p = p;
 		this.terminated = false;
@@ -16,6 +27,9 @@ public class ThreadManager extends Thread {
 		this.term = term;
 	}
 
+	/**
+	 * Start the thread pool
+	 */
 	@Override
 	public void run() {
 		this.p.startPool();
